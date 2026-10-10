@@ -1,0 +1,15 @@
+{
+  "name": "brandbloom-admin-panel",
+  "version": "1.0.0",
+  "description": "BrandBloom Admin Panel — E-Commerce Management & AI Optimization",
+  "scripts": {
+    "start": "npm run start --prefix backend",
+    "backend": "npm run start --prefix backend",
+    "backend:dev": "npm run dev --prefix backend",
+    "frontend": "npm run dev --prefix frontend",
+    "build:frontend": "npm run build --prefix frontend"
+  },
+  "keywords": ["brandbloom", "admin-panel", "ecommerce", "ai-recommendations"],
+  "author": "BrandBloom Hackathon Team",
+  "license": "MIT"
+}

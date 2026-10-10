@@ -1,0 +1,21 @@
+# Node modules
+node_modules/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Scratch & test outputs
+scratch/
+test-full-suite.js
+
+# OS / Editor
+.DS_Store
+.vscode/
+.idea/
