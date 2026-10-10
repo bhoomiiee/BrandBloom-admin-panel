@@ -1,4 +1,4 @@
-﻿name: BrandBloom Admin Panel CI/CD Pipeline
+name: BrandBloom Admin Panel CI/CD Pipeline
 
 on:
   push:
@@ -30,7 +30,7 @@ jobs:
       - name: Build Frontend Application
         run: |
           cd frontend
-          npm ci
+          npm ci || npm install
           npm run build
 
   docker-build:
