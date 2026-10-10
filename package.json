@@ -7,9 +7,15 @@
     "backend": "npm run start --prefix backend",
     "backend:dev": "npm run dev --prefix backend",
     "frontend": "npm run dev --prefix frontend",
-    "build:frontend": "npm run build --prefix frontend"
+    "build:frontend": "npm run build --prefix frontend",
+    "dev": "npm run dev --prefix frontend"
   },
-  "keywords": ["brandbloom", "admin-panel", "ecommerce", "ai-recommendations"],
+  "keywords": [
+    "brandbloom",
+    "admin-panel",
+    "ecommerce",
+    "ai-recommendations"
+  ],
   "author": "BrandBloom Hackathon Team",
   "license": "MIT"
 }

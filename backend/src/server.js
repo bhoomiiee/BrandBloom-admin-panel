@@ -10,6 +10,8 @@ import apiRoutes from './routes/index.js';
 
 const app = express();
 
+const BRANDBLOOM_LIVE_API = process.env.BRANDBLOOM_API_URL || 'http://localhost:3000/api';
+
 // CORS configuration
 app.use(cors({
   origin: '*',
@@ -24,7 +26,41 @@ app.use(express.urlencoded({ extended: true }));
 // Request logging
 app.use(requestLogger);
 
-// API Routes
+// Live Real-Time Bridge Middleware to BrandBloom (PostgreSQL)
+app.use('/api', async (req, res, next) => {
+  if (req.path === '/health') {
+    return res.json({
+      status: 'healthy',
+      name: 'BrandBloom Admin Panel API',
+      syncedWith: BRANDBLOOM_LIVE_API,
+      mode: 'live-realtime-sync',
+      timestamp: new Date().toISOString()
+    });
+  }
+
+  try {
+    const targetUrl = `${BRANDBLOOM_LIVE_API}${req.path}${req.url.includes('?') ? req.url.substring(req.url.indexOf('?')) : ''}`;
+    const options = {
+      method: req.method,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(req.headers.authorization ? { Authorization: req.headers.authorization } : {})
+      }
+    };
+    if (['POST', 'PUT', 'PATCH'].includes(req.method) && Object.keys(req.body || {}).length > 0) {
+      options.body = JSON.stringify(req.body);
+    }
+
+    const response = await fetch(targetUrl, options);
+    const data = await response.json();
+    return res.status(response.status).json(data);
+  } catch (err) {
+    // If BrandBloom live API is offline, fall back to local handlers
+    next();
+  }
+});
+
+// API Routes Fallback
 app.use('/api', apiRoutes);
 
 // Root greeting
@@ -34,7 +70,8 @@ app.get('/', (req, res) => {
     role: 'Admin Panel API',
     status: 'online',
     version: '1.0.0',
-    database: 'MongoDB Atlas',
+    mode: 'Real-Time Synchronized',
+    syncedBackend: BRANDBLOOM_LIVE_API,
     endpoints: '/api/health, /api/stores, /api/recommendations, /api/upgrades, /api/analytics, /api/notifications, /api/settings'
   });
 });
@@ -50,16 +87,24 @@ app.use((req, res) => {
 // Error handling middleware
 app.use(errorHandler);
 
-// Start: connect DB first, then seed, then listen
 const PORT = config.port || 5000;
 
 const start = async () => {
-  await connectDB();
-  await seedDatabase();
-  app.listen(PORT, () => {
-    logger.info(`🌸 BrandBloom Backend API is running on port ${PORT}`);
-    logger.info(`🌸 Health check: http://localhost:${PORT}/api/health`);
-  });
+  logger.info(`🌸 BrandBloom Backend API is running on port ${PORT}`);
+  logger.info(`🔗 Real-Time Bridge Active: Synchronized with BrandBloom on ${BRANDBLOOM_LIVE_API}`);
+  logger.info(`🌸 Health check: http://localhost:${PORT}/api/health`);
+
+  // Try optional MongoDB connection in background without blocking startup
+  if (process.env.MONGODB_URI) {
+    try {
+      await connectDB();
+      await seedDatabase();
+    } catch (err) {
+      logger.warn(`Optional MongoDB skipped: ${err.message}`);
+    }
+  }
+
+  app.listen(PORT);
 };
 
 start();

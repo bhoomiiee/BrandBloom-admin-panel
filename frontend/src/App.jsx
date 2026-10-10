@@ -269,7 +269,8 @@ export default function App() {
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
-    <AdminLayout
+    <>
+      <AdminLayout
       activeTab={activeTab}
       onNavigate={setActiveTab}
       unreadCount={unreadCount}
@@ -348,7 +349,9 @@ export default function App() {
         />
       )}
 
-      {/* Global Modals */}
+      </AdminLayout>
+
+      {/* Global Modals (rendered at root level so they never get clipped by sidebar) */}
       <StoreModal
         isOpen={isStoreModalOpen}
         onClose={() => setIsStoreModalOpen(false)}
@@ -401,6 +404,6 @@ export default function App() {
           </div>
         ))}
       </div>
-    </AdminLayout>
+    </>
   );
 }

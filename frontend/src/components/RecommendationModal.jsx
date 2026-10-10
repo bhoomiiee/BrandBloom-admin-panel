@@ -92,7 +92,7 @@ export default function RecommendationModal({
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {Object.entries(rec.supportingMetrics).map(([key, val]) => (
                   <div key={key} style={{ fontSize: '0.82rem', color: 'var(--dark-text)' }}>
-                    • <strong>{val}</strong>
+                    <span style={{ color: "var(--text-muted)" }}>• {key}:</span> <strong>{val}</strong>
                   </div>
                 ))}
               </div>

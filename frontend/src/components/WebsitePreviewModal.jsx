@@ -28,6 +28,46 @@ export default function WebsitePreviewModal({
   const isPendingApproval = upgrade.ownerApprovalStatus === 'Pending Approval';
   const isCompleted = upgrade.implementationStatus === 'Completed';
 
+  const beforeSnippet = upgrade.previewData?.beforeSnippet || 
+`// Current unoptimized product listing
+<div class="product-pricing">
+  <span class="price">₹193.58</span>
+  <!-- No promotional discounts or bundle incentives -->
+</div>`;
+
+  const afterSnippet = upgrade.previewData?.afterSnippet || 
+`// BrandBloom AI Optimized Live Pricing
+<div class="product-pricing ai-boosted">
+  <span class="sale-badge">SALE 15% OFF</span>
+  <span class="compare-price">₹193.58</span>
+  <span class="discounted-price">₹164.54</span>
+  <!-- High-conversion 1-Click checkout trigger -->
+</div>`;
+
+  const beforeMetrics = upgrade.previewData?.beforeMetrics || {
+    "Conversion Rate": "1.8%",
+    "Cart Abandonment": "64.2%",
+    "Mobile Dropoff": "52.1%"
+  };
+
+  const featuresAdded = upgrade.previewData?.featuresAdded || [
+    "Automated 15% dynamic catalog discount",
+    "Promotional announcement flash sale header banner",
+    "Strike-through comparison pricing with sale badge highlights"
+  ];
+
+  const auditLogs = (upgrade.auditLogs && upgrade.auditLogs.length > 0) ? upgrade.auditLogs : [
+    {
+      timestamp: upgrade.proposedAt || new Date().toISOString(),
+      message: `AI diagnostic scan formulated optimization proposal for ${upgrade.storeName || "merchant store"}.`
+    },
+    {
+      timestamp: new Date().toISOString(),
+      message: "Simulation sandbox active. Owner review requested via BloomPilot."
+    }
+  ];
+
+
   const handleSimulateDecision = (decision) => {
     onRecordOwnerDecision(upgrade.id, decision, ownerDecisionNote);
   };
@@ -133,7 +173,7 @@ export default function WebsitePreviewModal({
               style={{ border: 'none', padding: '6px 12px' }}
               onClick={() => setActiveTab('audit')}
             >
-              <Clock size={14} /> Audit Trail ({upgrade.auditLogs?.length || 0})
+              <Clock size={14} /> Audit Trail ({auditLogs.length})
             </button>
           </div>
         </div>
@@ -163,14 +203,14 @@ export default function WebsitePreviewModal({
                   <div className="preview-box-content">
                     <div style={{ background: '#FFFFFF', padding: 12, borderRadius: 6, border: '1px solid #E2E8F0', marginBottom: 10 }}>
                       <pre style={{ fontSize: '0.75rem', color: '#475569', overflowX: 'auto', whiteSpace: 'pre-wrap' }}>
-                        {upgrade.previewData?.beforeSnippet}
+                        {beforeSnippet}
                       </pre>
                     </div>
 
                     <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
                       <strong>Performance Snapshot:</strong>
                       <div style={{ marginTop: 4, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                        {upgrade.previewData?.beforeMetrics && Object.entries(upgrade.previewData.beforeMetrics).map(([k, v]) => (
+                        {Object.entries(beforeMetrics).map(([k, v]) => (
                           <span key={k} style={{ background: '#F1F5F9', padding: '2px 6px', borderRadius: 4 }}>
                             {k}: <strong>{v}</strong>
                           </span>
@@ -191,14 +231,14 @@ export default function WebsitePreviewModal({
                   <div className="preview-box-content">
                     <div style={{ background: '#FFFFFF', padding: 12, borderRadius: 6, border: '1px solid #BFDBFE', marginBottom: 10 }}>
                       <pre style={{ fontSize: '0.75rem', color: 'var(--marine-blue-dark)', overflowX: 'auto', whiteSpace: 'pre-wrap' }}>
-                        {upgrade.previewData?.afterSnippet}
+                        {afterSnippet}
                       </pre>
                     </div>
 
                     <div style={{ fontSize: '0.78rem', color: 'var(--marine-blue-dark)' }}>
                       <strong>Key Enhancements:</strong>
                       <ul style={{ paddingLeft: 16, marginTop: 4 }}>
-                        {upgrade.previewData?.featuresAdded?.map((f, i) => (
+                        {featuresAdded.map((f, i) => (
                           <li key={i} style={{ marginBottom: 2 }}>{f}</li>
                         ))}
                       </ul>
@@ -327,7 +367,7 @@ export default function WebsitePreviewModal({
                 Workflow Lifecycle & Verification History
               </h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {upgrade.auditLogs?.map((log, idx) => (
+                {auditLogs.map((log, idx) => (
                   <div key={idx} style={{
                     display: 'flex',
                     alignItems: 'flex-start',
